@@ -15,6 +15,7 @@ public class PhoneCamera : MonoBehaviour
 
 	void Start ()
 	{
+		GameManagerComponent.Instance.CameraAvailable = true;
 		defaultBg = bg.texture;
 
 		WebCamDevice[] devices = WebCamTexture.devices;
@@ -44,6 +45,7 @@ public class PhoneCamera : MonoBehaviour
 
 		backCam.Play ();
 		bg.texture = backCam;
+		GameManagerComponent.Instance.CameraBackground.texture = backCam;
 	}
 	
 	void Update ()
@@ -59,5 +61,8 @@ public class PhoneCamera : MonoBehaviour
 
 		int orient = -backCam.videoRotationAngle;
 		bg.rectTransform.localEulerAngles = new Vector3 (0, 0, orient);
+
+		GameManagerComponent.Instance.CameraBackground.rectTransform.localScale = new Vector3(-1f, scaleY, 1f);
+		GameManagerComponent.Instance.CameraBackground.rectTransform.localEulerAngles = new Vector3 (0, 0, orient);
 	}
 }
