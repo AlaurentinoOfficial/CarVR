@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO.Ports;
 
 public class PhoneCamera : MonoBehaviour
 {
@@ -9,15 +10,38 @@ public class PhoneCamera : MonoBehaviour
 	WebCamTexture backCam;
 	Texture defaultBg;
 
-	public RawImage bg;
-	public AspectRatioFitter fit;
+	public string Port = "COM7";
 
+	SerialPort serial;
 
 	void Start ()
 	{
-		GameManagerComponent.Instance.CameraAvailable = true;
-		defaultBg = bg.texture;
+		try
+		{
+			serial = new SerialPort (Port, 9600);
+			serial.Open ();
+		}
+		catch(System.Exception ex)
+		{}
+		finally
+		{
 
+			ConfigureTexture ();
+		}
+	}
+	
+	void Update ()
+	{
+		UpdateAspectRatio ();
+
+		if (serial.IsOpen)
+			serial.WriteLine (Player.Instance.Camera.rotation.y.ToString ());
+		else
+			Debug.Log (Player.Instance.Camera.rotation.y.ToString());
+	}
+
+	void ConfigureTexture()
+	{
 		WebCamDevice[] devices = WebCamTexture.devices;
 		camAvailable = devices.Length != 0;
 
@@ -44,25 +68,21 @@ public class PhoneCamera : MonoBehaviour
 		}
 
 		backCam.Play ();
-		bg.texture = backCam;
-		GameManagerComponent.Instance.CameraBackground.texture = backCam;
+		Player.Instance.Stream.texture = backCam;
 	}
-	
-	void Update ()
+
+	void UpdateAspectRatio()
 	{
 		if (!camAvailable)
 			return;
 
 		float ratio = (float) backCam.width / (float) backCam.height;
-		fit.aspectRatio = ratio;
+		Player.Instance.Fit.aspectRatio = ratio;
 
 		float scaleY = backCam.videoVerticallyMirrored ? -1f : 1f;
-		bg.rectTransform.localScale = new Vector3(-1f, scaleY, 1f);
+		Player.Instance.Stream.rectTransform.localScale = new Vector3(-1f, scaleY, 1f);
 
 		int orient = -backCam.videoRotationAngle;
-		bg.rectTransform.localEulerAngles = new Vector3 (0, 0, orient);
-
-		GameManagerComponent.Instance.CameraBackground.rectTransform.localScale = new Vector3(-1f, scaleY, 1f);
-		GameManagerComponent.Instance.CameraBackground.rectTransform.localEulerAngles = new Vector3 (0, 0, orient);
+		Player.Instance.Stream.rectTransform.localEulerAngles = new Vector3 (0, 0, orient);
 	}
 }

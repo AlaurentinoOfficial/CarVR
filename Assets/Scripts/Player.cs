@@ -1,19 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
 
 	public Transform Camera;
+	public RawImage Stream;
+	public AspectRatioFitter Fit;
 
-	// Use this for initialization
-	void Start () {
-		GameManagerComponent.Instance.PlayerAvailable = true;
-		GameManagerComponent.Instance.PlayerCamera = Camera;
+	public static Player Instance { get; set; }
+
+	void Start ()
+	{
+		Instance = this;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	void LateUpdate()
+	{
+		Camera.rotation = Quaternion.Euler (0f, Mathf.Clamp(Camera.rotation.eulerAngles.y, 180, 90), 0f);;
 	}
 }
