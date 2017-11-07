@@ -16,8 +16,11 @@ public class Player : MonoBehaviour {
 		Instance = this;
 	}
 
-	void LateUpdate()
+	void Update()
 	{
-		Camera.rotation = Quaternion.Euler (0f, Mathf.Clamp(Camera.rotation.eulerAngles.y, 180, 90), 0f);;
+		Camera.rotation = Quaternion.Euler (0f,
+			Camera.rotation.eulerAngles.y < 30f ? 30f :
+			Camera.rotation.eulerAngles.y > 180f ? 180f :
+			Camera.rotation.eulerAngles.y, 0f);;
 	}
 }

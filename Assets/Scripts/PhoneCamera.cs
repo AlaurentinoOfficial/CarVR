@@ -6,12 +6,11 @@ using System.IO.Ports;
 
 public class PhoneCamera : MonoBehaviour
 {
+	public string Port = "COM7";
+
 	bool camAvailable;
 	WebCamTexture backCam;
 	Texture defaultBg;
-
-	public string Port = "COM7";
-
 	SerialPort serial;
 
 	void Start ()
@@ -23,11 +22,8 @@ public class PhoneCamera : MonoBehaviour
 		}
 		catch(System.Exception ex)
 		{}
-		finally
-		{
 
-			ConfigureTexture ();
-		}
+		ConfigureTexture ();
 	}
 	
 	void Update ()
@@ -35,9 +31,9 @@ public class PhoneCamera : MonoBehaviour
 		UpdateAspectRatio ();
 
 		if (serial.IsOpen)
-			serial.WriteLine (Player.Instance.Camera.rotation.y.ToString ());
-		else
-			Debug.Log (Player.Instance.Camera.rotation.y.ToString());
+			serial.WriteLine (Player.Instance.Camera.rotation.eulerAngles.y.ToString ());
+
+		Debug.Log (Player.Instance.Camera.rotation.eulerAngles.y);
 	}
 
 	void ConfigureTexture()
